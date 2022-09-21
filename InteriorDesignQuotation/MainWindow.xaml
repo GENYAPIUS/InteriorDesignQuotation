@@ -3,44 +3,117 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:InteriorDesignQuotation"
+        xmlns:viewModels="clr-namespace:InteriorDesignQuotation.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="600" Width="1920" MinWidth="1280">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/DefaultStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="8*"></RowDefinition>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <!-- Input Area -->
         <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Height="70">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="3*" />
-                    <ColumnDefinition Width="3*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Content="區域"></Label>
-                <ComboBox Grid.Column="0" Height="30" Margin="5 0 5 0"></ComboBox>
-
-                <Label Grid.Column="1" Content="工程分類"></Label>
-                <ComboBox Grid.Column="1" Height="30" Margin="5 0 5 0"></ComboBox>
-                <Label Grid.Column="2" Content="工程名稱"></Label>
-                <TextBox Grid.Column="2" Height="30" Margin="5 0 5 0"></TextBox>
-                <Label Grid.Column="3" Content="價格"></Label>
-                <TextBox Grid.Column="3" Height="30" Margin="5 0 5 0"></TextBox>
-                <Button Grid.Column="4" Content="新增" Height="30" Margin="5 0 5 0"></Button>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="工程分類" />
+                    <TextBlock Grid.Column="1" Text="區域" />
+                    <TextBlock Grid.Column="2" Text="工程名稱" />
+                    <TextBlock Grid.Column="3" Text="數量" />
+                    <TextBlock Grid.Column="4" Text="單位" />
+                    <TextBlock Grid.Column="5" Text="單價" />
+                    <TextBlock Grid.Column="6" Text="金額" />
+                </Grid>
+                <Grid Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" Height="30" Margin="5 0" ItemsSource="{Binding Categories}"
+                              SelectedItem="{Binding SelectedCategory}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox Grid.Column="1" Height="30" ItemsSource="{Binding Areas}"
+                              SelectedItem="{Binding SelectedArea}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Grid.Column="2" Height="30" Text="{Binding Name}" />
+                    <TextBox Grid.Column="3" Height="30"
+                             Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged }" />
+                    <ComboBox Grid.Column="4" Height="30" ItemsSource="{Binding Units}"
+                              SelectedItem="{Binding SelectedUnit}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Grid.Column="5" Height="30"
+                             Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged }" />
+                    <TextBox Grid.Column="6" Height="30" Text="{Binding TotalPrice, Mode=OneWay}" IsEnabled="False" />
+                    <Button Grid.Column="7" Content="新增" Height="30" Margin="5 0"
+                            Command="{Binding AddWorkItemCommand}" />
+                </Grid>
+                <Grid Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Row="0">
+                        <TextBlock Text="備註" Margin="5" />
+                    </Grid>
+                    <Grid Row="1">
+                        <TextBox Name="NoteTextBox" VerticalContentAlignment="Top" AcceptsReturn="True" MinHeight="100"
+                                 Text="{Binding Note}" />
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
+        <!-- Data Preview Area  -->
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+            <DataGrid ItemsSource="{Binding WorkItems}" />
         </Grid>
     </Grid>
 </Window>
