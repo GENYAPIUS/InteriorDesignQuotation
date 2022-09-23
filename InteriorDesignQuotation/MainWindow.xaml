@@ -20,6 +20,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <!-- Input Area -->
         <Grid Grid.Row="0">
@@ -91,8 +92,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <TextBox Grid.Column="5" Height="30"
-                             Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged }" />
-                    <TextBox Grid.Column="6" Height="30" Text="{Binding TotalPrice, Mode=OneWay}" IsEnabled="False" />
+                             Text="{Binding ItemUnitPrice, UpdateSourceTrigger=PropertyChanged }" />
+                    <TextBox Grid.Column="6" Height="30" Text="{Binding ItemTotalPrice, Mode=OneWay}" IsEnabled="False" />
                     <Button Grid.Column="7" Content="新增" Height="30" Margin="5 0"
                             Command="{Binding AddWorkItemCommand}" />
                 </Grid>
@@ -111,9 +112,95 @@
                 </Grid>
             </Grid>
         </Grid>
-        <!-- Data Preview Area  -->
+        <!-- Work Item Preview Area  -->
         <Grid Grid.Row="1">
-            <DataGrid ItemsSource="{Binding WorkItems}" />
+            <DataGrid ItemsSource="{Binding WorkItems}" SelectedItem="{Binding SelectedWorkItem}" AutoGenerateColumns="False" CanUserAddRows="False" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="工程分類" Binding="{Binding Category}" />
+                    <DataGridTemplateColumn Header="區域-名稱">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Area, Mode=OneWay}" />
+                                    <TextBlock Text=" - " />
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Text="{Binding Area, Mode=TwoWay}" />
+                                    <TextBlock Text="-"></TextBlock>
+                                    <TextBox Text="{Binding Name, Mode=TwoWay}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="數量" Binding="{Binding Quantity}" />
+                    <DataGridTextColumn Header="單位" Binding="{Binding Unit}" />
+                    <DataGridTextColumn Header="單價" Binding="{Binding UnitPrice}" />
+                    <DataGridTextColumn Header="總價" Binding="{Binding TotalPrice}" />
+                    <DataGridTextColumn Header="備註" Binding="{Binding Note}" />
+                    <DataGridTemplateColumn Header="選項">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Button Content="刪除" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}},Path=DataContext.RemoveWorkItemCommand}" />
+                                </Grid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        <!-- Payment Information Area -->
+        <Grid Grid.Row="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="總金額：" />
+                    <TextBlock Grid.Column="1" Text="{Binding TotalPrice}" />
+                </Grid>
+                <Grid Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="分" />
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding InstallmentPlanNumber, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Grid.Column="2" Text="期" />
+                    </Grid>
+                    <Grid Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="分期資訊" />
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding InstallmentInfos}" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="期數" Binding="{Binding Name}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="金額" Binding="{Binding Price}" IsReadOnly="True" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
