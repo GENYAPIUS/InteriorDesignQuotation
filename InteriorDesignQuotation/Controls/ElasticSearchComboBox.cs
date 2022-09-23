@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,16 +54,16 @@ namespace InteriorDesignQuotation.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ElasticSearchComboBox),
                 new FrameworkPropertyMetadata(typeof(ElasticSearchComboBox)));
-            _searchContentProperty =
+            SearchContentProperty =
                 DependencyProperty.Register(nameof(SearchContent), typeof(string), typeof(ElasticSearchComboBox));
         }
 
-        public string? SearchContent
-        {
-            get => GetValue(_searchContentProperty) as string;
-            set => SetValue(_searchContentProperty, value);
-        }
+        public static readonly DependencyProperty SearchContentProperty;
 
-        private static readonly DependencyProperty _searchContentProperty;
+        public string SearchContent
+        {
+            get => GetValue(SearchContentProperty) as string ?? string.Empty;
+            set => SetValue(SearchContentProperty, value);
+        }
     }
 }

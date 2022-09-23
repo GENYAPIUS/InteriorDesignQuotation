@@ -6,6 +6,7 @@
         xmlns:viewModels="clr-namespace:InteriorDesignQuotation.ViewModels"
         xmlns:converters="clr-namespace:InteriorDesignQuotation.Converters"
         xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
+        xmlns:controls="clr-namespace:InteriorDesignQuotation.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1920" MinWidth="1280">
     <Window.Resources>
@@ -66,14 +67,23 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" Height="30" Margin="5 0" ItemsSource="{Binding Categories}"
-                              SelectedItem="{Binding SelectedCategory, UpdateSourceTrigger=PropertyChanged}">
+                    <controls:ElasticSearchComboBox Grid.Column="0" Height="30" Margin="5 0"
+                                                    ItemsSource="{Binding Categories}"
+                                                    SearchContent="{Binding CategoriesSearchContent,UpdateSourceTrigger=PropertyChanged}">
+                        <controls:ElasticSearchComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"></TextBlock>
+                            </DataTemplate>
+                        </controls:ElasticSearchComboBox.ItemTemplate>
+                    </controls:ElasticSearchComboBox>
+                    <!--<ComboBox Grid.Column="0" Height="30" Margin="5 0" ItemsSource="{Binding Categories}"
+                              SelectedItem="{Binding SelectedCategory}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}" />
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    </ComboBox>-->
                     <ComboBox Grid.Column="1" Height="30" ItemsSource="{Binding Areas}"
                               SelectedItem="{Binding SelectedArea}">
                         <ComboBox.ItemTemplate>
