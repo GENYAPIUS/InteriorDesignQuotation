@@ -82,7 +82,7 @@
                     </ComboBox>
                     <TextBox Grid.Column="2" Height="30" Text="{Binding Name}" />
                     <TextBox Grid.Column="3" Height="30"
-                             Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged }" />
+                             Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, StringFormat={}{:N1} }" />
                     <ComboBox Grid.Column="4" Height="30" ItemsSource="{Binding Units}"
                               SelectedItem="{Binding SelectedUnit}">
                         <ComboBox.ItemTemplate>
@@ -92,7 +92,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <TextBox Grid.Column="5" Height="30"
-                             Text="{Binding ItemUnitPrice, UpdateSourceTrigger=PropertyChanged }" />
+                             Text="{Binding ItemUnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat={}{N} }" />
                     <TextBox Grid.Column="6" Height="30" Text="{Binding ItemTotalPrice, Mode=OneWay}" IsEnabled="False" />
                     <Button Grid.Column="7" Content="新增" Height="30" Margin="5 0"
                             Command="{Binding AddWorkItemCommand}" />
@@ -106,7 +106,7 @@
                         <TextBlock Text="備註" Margin="5" />
                     </Grid>
                     <Grid Row="1">
-                        <TextBox Name="NoteTextBox" VerticalContentAlignment="Top" AcceptsReturn="True" MinHeight="100"
+                        <TextBox VerticalContentAlignment="Top" AcceptsReturn="True" MinHeight="100"
                                  Text="{Binding Note}" />
                     </Grid>
                 </Grid>
@@ -114,39 +114,23 @@
         </Grid>
         <!-- Work Item Preview Area  -->
         <Grid Grid.Row="1">
-            <DataGrid ItemsSource="{Binding WorkItems}" SelectedItem="{Binding SelectedWorkItem}" AutoGenerateColumns="False" CanUserAddRows="False" >
+            <DataGrid ItemsSource="{Binding WorkItems}" SelectedItem="{Binding SelectedWorkItem }"
+                      AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="工程分類" Binding="{Binding Category}" />
-                    <DataGridTemplateColumn Header="區域-名稱">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Area, Mode=OneWay}" />
-                                    <TextBlock Text=" - " />
-                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                        <DataGridTemplateColumn.CellEditingTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBox Text="{Binding Area, Mode=TwoWay}" />
-                                    <TextBlock Text="-"></TextBlock>
-                                    <TextBox Text="{Binding Name, Mode=TwoWay}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellEditingTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="數量" Binding="{Binding Quantity}" />
-                    <DataGridTextColumn Header="單位" Binding="{Binding Unit}" />
-                    <DataGridTextColumn Header="單價" Binding="{Binding UnitPrice}" />
-                    <DataGridTextColumn Header="總價" Binding="{Binding TotalPrice}" />
-                    <DataGridTextColumn Header="備註" Binding="{Binding Note}" />
+                    <DataGridTextColumn Header="工程分類" Binding="{Binding Category }" />
+                    <DataGridTextColumn Header="區域" Binding="{Binding Area }" />
+                    <DataGridTextColumn Header="名稱" Binding="{Binding Name }" />
+                    <DataGridTextColumn Header="數量" Binding="{Binding Quantity }" />
+                    <DataGridTextColumn Header="單位" Binding="{Binding Unit }" />
+                    <DataGridTextColumn Header="單價" Binding="{Binding UnitPrice }" />
+                    <DataGridTextColumn Header="總價" Binding="{Binding TotalPrice }" />
+                    <DataGridTextColumn Header="備註" Binding="{Binding Note }" />
                     <DataGridTemplateColumn Header="選項">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <Button Content="刪除" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}},Path=DataContext.RemoveWorkItemCommand}" />
+                                    <Button Content="刪除"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}},Path=DataContext.RemoveWorkItemCommand}" />
                                 </Grid>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -159,7 +143,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -172,7 +156,7 @@
                 <Grid Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid Row="0">
@@ -189,10 +173,11 @@
                     <Grid Row="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="分期資訊" />
-                        <DataGrid Grid.Row="1" ItemsSource="{Binding InstallmentInfos}" AutoGenerateColumns="False">
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding InstallmentInfos}" AutoGenerateColumns="False"
+                                  VerticalScrollBarVisibility="Visible" CanUserAddRows="False">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="期數" Binding="{Binding Name}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="金額" Binding="{Binding Price}" IsReadOnly="True" />
