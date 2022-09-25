@@ -29,9 +29,8 @@ public class WorkItemViewModel : NotifyPropertyBase
 
 internal class WorkItemService : IWorkItemService
 {
-    public ObservableCollection<WorkItemViewModel> GetWorkItem()
-    {
-        return new ObservableCollection<WorkItemViewModel>
+    public ObservableCollection<WorkItemViewModel> GetWorkItem() =>
+        new ObservableCollection<WorkItemViewModel>
         {
             new()
             {
@@ -78,5 +77,4 @@ internal class WorkItemService : IWorkItemService
                 Note = string.Empty
             }
         };
-    }
 }

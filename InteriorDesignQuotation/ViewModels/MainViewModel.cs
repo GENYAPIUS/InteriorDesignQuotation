@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.DirectoryServices;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using InteriorDesignQuotation.Extensions;
 using InteriorDesignQuotation.Services.Interfaces;
@@ -15,22 +10,16 @@ namespace InteriorDesignQuotation.ViewModels;
 public class MainViewModel : NotifyPropertyBase
 {
     private readonly IWorkItemService _workItemService;
-
     private ICommand? _addWorkItemCommand;
-
-    private ICommand? _removeWorkItemCommand;
-
-    private decimal _quantity;
-
-    private WorkItemViewModel? _selectedWorkItem;
-    private decimal _itemUnitPrice;
-
-    private ObservableCollection<WorkItemViewModel> _workItems = new();
-
-    private string _categoriesSearchText = string.Empty;
     private string _areasSearchText = string.Empty;
-    private string _unitSearchText = string.Empty;
+    private string _categoriesSearchText = string.Empty;
     private int _installmentPlanNumber;
+    private decimal _itemUnitPrice;
+    private decimal _quantity;
+    private ICommand? _removeWorkItemCommand;
+    private WorkItemViewModel? _selectedWorkItem;
+    private string _unitSearchText = string.Empty;
+    private ObservableCollection<WorkItemViewModel> _workItems = new();
 
     public MainViewModel()
     {
@@ -43,19 +32,15 @@ public class MainViewModel : NotifyPropertyBase
 
     public ObservableCollection<string> Categories { get; set; }
 
-    public ObservableCollection<string> Areas { get; set; }
-
-    public ObservableCollection<string> CategoriesSearchResult { get; set; } = new();
-
-    public ObservableCollection<string> AreasSearchResult { get; set; } = new();
-
-    public ObservableCollection<string> UnitsSearchResult { get; set; } = new();
-
     public string CategoriesSearchContent
     {
         get => _categoriesSearchText;
         set => SetProperty(ref _categoriesSearchText, value);
     }
+
+    public ObservableCollection<string> CategoriesSearchResult { get; set; } = new();
+
+    public ObservableCollection<string> Areas { get; set; }
 
     public string AreasSearchContent
     {
@@ -63,33 +48,45 @@ public class MainViewModel : NotifyPropertyBase
         set => SetProperty(ref _areasSearchText, value);
     }
 
-    public string UnitSearchContent
-    {
-        get => _unitSearchText;
-        set => SetProperty(ref _unitSearchText, value);
-    }
+    public ObservableCollection<string> AreasSearchResult { get; set; } = new();
 
     public string Name { get; set; } = string.Empty;
 
     public decimal Quantity
     {
         get => _quantity;
-        set => SetProperty(ref _quantity, value, nameof(ItemTotalPrice));
+        set
+        {
+            SetProperty(ref _quantity, value);
+            OnPropertyChanged(nameof(ItemTotalPrice));
+        }
     }
 
     public ObservableCollection<string> Units { get; set; }
 
+    public string UnitSearchContent
+    {
+        get => _unitSearchText;
+        set => SetProperty(ref _unitSearchText, value);
+    }
+
+    public ObservableCollection<string> UnitsSearchResult { get; set; } = new();
+
     public decimal ItemUnitPrice
     {
         get => _itemUnitPrice;
-        set => SetProperty(ref _itemUnitPrice, value, nameof(ItemTotalPrice));
+        set
+        {
+            SetProperty(ref _itemUnitPrice, value);
+            OnPropertyChanged(nameof(ItemTotalPrice));
+        }
     }
 
     public decimal ItemTotalPrice => Quantity * ItemUnitPrice;
 
     public decimal TotalPrice => WorkItems.Sum(x => x.TotalPrice);
 
-    public string Note { get; set; }
+    public string Note { get; set; } = string.Empty;
 
     public string SelectedCategory { get; set; } = string.Empty;
 
@@ -97,47 +94,49 @@ public class MainViewModel : NotifyPropertyBase
 
     public string SelectedUnit { get; set; } = string.Empty;
 
-    public int InstallmentPlanNumber { get => _installmentPlanNumber;
-        set
-        {
-            SetProperty(ref _installmentPlanNumber, value);
-            if(_installmentPlanNumber <= 0) return;
-            InstallmentInfos.Clear();
-            for (var i = 1; i <= _installmentPlanNumber; i++)
-            {
-                InstallmentInfos.Add(new InstallmentPlanInfo
-                {
-                    Name = $"第 {i} 期", Price = TotalPrice / _installmentPlanNumber
-                });
-            }
-        }
-    }
-
-    public ObservableCollection<InstallmentPlanInfo> InstallmentInfos { get; set; } = new();
-
     public ObservableCollection<WorkItemViewModel> WorkItems
     {
         get => _workItems;
         set => SetProperty(ref _workItems, value);
     }
 
-
     public WorkItemViewModel? SelectedWorkItem
     {
         get => _selectedWorkItem;
-
-        set => SetProperty(ref _selectedWorkItem, value);
+        set
+        {
+            SetProperty(ref _selectedWorkItem, value);
+            OnPropertyChanged(nameof(TotalPrice));
+        }
     }
 
-    public ICommand AddWorkItemCommand =>
-        _addWorkItemCommand ??= new RelayCommand(_ => WorkItems?.Add(GetWorkItemFromView()));
-
-    public ICommand RemoveWorkItemCommand =>  _removeWorkItemCommand ??= new RelayCommand(_ =>
+    public int InstallmentPlanNumber
     {
-        if ( SelectedWorkItem == null) return;
-        WorkItems.Remove(SelectedWorkItem);
-        var a = TotalPrice;
-    });
+        get => _installmentPlanNumber;
+        set
+        {
+            if (value <= 0) return;
+            InstallmentInfos.Clear();
+            for (var i = 1; i <= value; i++)
+                InstallmentInfos.Add(new InstallmentPlanInfo
+                {
+                    Name = $"第 {i} 期", Price = TotalPrice / value
+                });
+            SetProperty(ref _installmentPlanNumber, value);
+        }
+    }
+
+    public ObservableCollection<InstallmentPlanInfo> InstallmentInfos { get; set; } = new();
+
+    public ICommand AddWorkItemCommand =>
+        _addWorkItemCommand ??= new RelayCommand(_ => WorkItems.Add(GetWorkItemFromView()));
+
+    public ICommand RemoveWorkItemCommand =>
+        _removeWorkItemCommand ??= new RelayCommand(_ =>
+        {
+            if (SelectedWorkItem == null) return;
+            WorkItems.Remove(SelectedWorkItem);
+        });
 
     private WorkItemViewModel GetWorkItemFromView()
     {
@@ -153,10 +152,5 @@ public class MainViewModel : NotifyPropertyBase
             Note = Note.Trim()
         };
         return result;
-    }
-
-    public void OnWorkItemsUpdate(object? sender, EventArgs args)
-    {
-        return;
     }
 }
