@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace WPFLibrary;
+namespace BindingLibrary;
 
 public class RelayCommand : ICommand
 {

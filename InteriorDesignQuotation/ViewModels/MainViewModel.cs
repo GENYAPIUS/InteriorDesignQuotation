@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
+using BindingLibrary;
 using InteriorDesignQuotation.Extensions;
 using InteriorDesignQuotation.Services.Interfaces;
-using WPFLibrary;
 
 namespace InteriorDesignQuotation.ViewModels;
 
@@ -13,9 +14,10 @@ public class MainViewModel : NotifyPropertyBase
     private ICommand? _addWorkItemCommand;
     private string _areasSearchText = string.Empty;
     private string _categoriesSearchText = string.Empty;
+    private ICommand? _cellUpdateCommand;
     private int _installmentPlanNumber;
-    private decimal _itemUnitPrice;
-    private decimal _quantity;
+    private decimal? _itemUnitPrice;
+    private decimal? _quantity;
     private ICommand? _removeWorkItemCommand;
     private WorkItemViewModel? _selectedWorkItem;
     private string _unitSearchText = string.Empty;
@@ -52,7 +54,7 @@ public class MainViewModel : NotifyPropertyBase
 
     public string Name { get; set; } = string.Empty;
 
-    public decimal Quantity
+    public decimal? Quantity
     {
         get => _quantity;
         set
@@ -72,7 +74,7 @@ public class MainViewModel : NotifyPropertyBase
 
     public ObservableCollection<string> UnitsSearchResult { get; set; } = new();
 
-    public decimal ItemUnitPrice
+    public decimal? ItemUnitPrice
     {
         get => _itemUnitPrice;
         set
@@ -82,7 +84,7 @@ public class MainViewModel : NotifyPropertyBase
         }
     }
 
-    public decimal ItemTotalPrice => Quantity * ItemUnitPrice;
+    public decimal ItemTotalPrice => (Quantity ?? 0) * (ItemUnitPrice ?? 0);
 
     public decimal TotalPrice => WorkItems.Sum(x => x.TotalPrice);
 
@@ -129,13 +131,25 @@ public class MainViewModel : NotifyPropertyBase
     public ObservableCollection<InstallmentPlanInfo> InstallmentInfos { get; set; } = new();
 
     public ICommand AddWorkItemCommand =>
-        _addWorkItemCommand ??= new RelayCommand(_ => WorkItems.Add(GetWorkItemFromView()));
+        _addWorkItemCommand ??= new RelayCommand(_ =>
+        {
+            WorkItems.Add(GetWorkItemFromView());
+            OnPropertyChanged(nameof(TotalPrice));
+        });
 
     public ICommand RemoveWorkItemCommand =>
         _removeWorkItemCommand ??= new RelayCommand(_ =>
         {
             if (SelectedWorkItem == null) return;
             WorkItems.Remove(SelectedWorkItem);
+        });
+
+    public ICommand CellUpdateCommand =>
+        _cellUpdateCommand ??= new RelayCommand(sender =>
+        {
+            var source = sender;
+            Debug.WriteLine(source);
+            OnPropertyChanged(nameof(TotalPrice));
         });
 
     private WorkItemViewModel GetWorkItemFromView()
@@ -145,9 +159,9 @@ public class MainViewModel : NotifyPropertyBase
             Category = SelectedCategory.Trim(),
             Area = SelectedArea.Trim(),
             Name = Name.Trim(),
-            Quantity = Quantity,
+            Quantity = Quantity ?? 0,
             Unit = SelectedUnit.Trim(),
-            UnitPrice = ItemUnitPrice,
+            UnitPrice = ItemUnitPrice ?? 0,
             TotalPrice = ItemTotalPrice,
             Note = Note.Trim()
         };

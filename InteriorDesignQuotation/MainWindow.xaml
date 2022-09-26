@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:InteriorDesignQuotation.ViewModels"
+        xmlns:converters="clr-namespace:InteriorDesignQuotation.Converters"
+        xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="1920" MinWidth="1280">
     <Window.Resources>
@@ -65,7 +67,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Column="0" Height="30" Margin="5 0" ItemsSource="{Binding Categories}"
-                              SelectedItem="{Binding SelectedCategory}">
+                              SelectedItem="{Binding SelectedCategory, UpdateSourceTrigger=PropertyChanged}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}" />
@@ -81,8 +83,15 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <TextBox Grid.Column="2" Height="30" Text="{Binding Name}" />
-                    <TextBox Grid.Column="3" Height="30"
-                             Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged, StringFormat={}{:N1} }" />
+                    <TextBox Grid.Column="3" Height="30">
+                        <TextBox.Text>
+                            <Binding Path="Quantity" UpdateSourceTrigger="PropertyChanged" StringFormat="{}{0:D}">
+                                <Binding.Converter>
+                                    <converters:DecimalConverter />
+                                </Binding.Converter>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
                     <ComboBox Grid.Column="4" Height="30" ItemsSource="{Binding Units}"
                               SelectedItem="{Binding SelectedUnit}">
                         <ComboBox.ItemTemplate>
@@ -91,8 +100,16 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <TextBox Grid.Column="5" Height="30"
-                             Text="{Binding ItemUnitPrice, UpdateSourceTrigger=PropertyChanged, StringFormat={}{N} }" />
+                    <TextBox Grid.Column="5" Height="30">
+                        <TextBox.Text>
+                            <Binding Path="ItemUnitPrice" UpdateSourceTrigger="PropertyChanged" StringFormat="{}{0:F0}">
+                                <Binding.Converter>
+                                    <converters:DecimalConverter />
+                                </Binding.Converter>
+                            </Binding>
+                        </TextBox.Text>
+
+                    </TextBox>
                     <TextBox Grid.Column="6" Height="30" Text="{Binding ItemTotalPrice, Mode=OneWay}" IsEnabled="False" />
                     <Button Grid.Column="7" Content="新增" Height="30" Margin="5 0"
                             Command="{Binding AddWorkItemCommand}" />
@@ -136,6 +153,11 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="CellEditEnding">
+                        <i:InvokeCommandAction Command="{Binding CellUpdateCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
             </DataGrid>
         </Grid>
         <!-- Payment Information Area -->
@@ -177,7 +199,9 @@
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="分期資訊" />
                         <DataGrid Grid.Row="1" ItemsSource="{Binding InstallmentInfos}" AutoGenerateColumns="False"
-                                  VerticalScrollBarVisibility="Visible" CanUserAddRows="False">
+                                  VerticalScrollBarVisibility="Visible" CanUserAddRows="False"
+                                  CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False"
+                                  HorizontalAlignment="Left">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="期數" Binding="{Binding Name}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="金額" Binding="{Binding Price}" IsReadOnly="True" />

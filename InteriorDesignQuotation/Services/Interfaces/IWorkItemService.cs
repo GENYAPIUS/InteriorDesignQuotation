@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using WPFLibrary;
+using BindingLibrary;
 
 namespace InteriorDesignQuotation.Services.Interfaces;
 
@@ -30,9 +30,9 @@ public class WorkItemViewModel : NotifyPropertyBase
 internal class WorkItemService : IWorkItemService
 {
     public ObservableCollection<WorkItemViewModel> GetWorkItem() =>
-        new ObservableCollection<WorkItemViewModel>
+        new()
         {
-            new()
+            new WorkItemViewModel
             {
                 Category = "拆除工程",
                 Area = "前陽台",
@@ -43,7 +43,7 @@ internal class WorkItemService : IWorkItemService
                 TotalPrice = 8000,
                 Note = "牆面壁磚破損疑慮，泥作回補，有補洞痕跡，地面孔洞待確認"
             },
-            new()
+            new WorkItemViewModel
             {
                 Category = "拆除工程",
                 Area = "前陽台",
@@ -54,7 +54,7 @@ internal class WorkItemService : IWorkItemService
                 TotalPrice = 3500,
                 Note = string.Empty
             },
-            new()
+            new WorkItemViewModel
             {
                 Category = "拆除工程",
                 Area = "大浴室",
@@ -65,7 +65,7 @@ internal class WorkItemService : IWorkItemService
                 TotalPrice = 2400,
                 Note = string.Empty
             },
-            new()
+            new WorkItemViewModel
             {
                 Category = "泥作工程",
                 Area = "大浴室",
