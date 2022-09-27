@@ -67,7 +67,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <controls:ElasticSearchComboBox Grid.Column="0" Height="30" Margin="5 0"
+                    <controls:ElasticSearchComboBox Grid.Column="0" Height="30" Margin="5 0" x:Name="CategoriesComboBox"
                                                     ItemsSource="{Binding Categories}"
                                                     SearchContent="{Binding CategoriesSearchContent,UpdateSourceTrigger=PropertyChanged}">
                         <controls:ElasticSearchComboBox.ItemTemplate>
@@ -84,14 +84,21 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>-->
-                    <ComboBox Grid.Column="1" Height="30" ItemsSource="{Binding Areas}"
-                              SelectedItem="{Binding SelectedArea}">
-                        <ComboBox.ItemTemplate>
+                    <controls:ElasticSearchComboBox Grid.Column="1" Height="30" Margin="5 0" ItemsSource="{Binding Areas}" SelectedItem="{Binding SelectedArea}">
+                        <controls:ElasticSearchComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}" />
                             </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                        </controls:ElasticSearchComboBox.ItemTemplate>
+                    </controls:ElasticSearchComboBox>
+                    <!-- <ComboBox Grid.Column="1" Height="30" ItemsSource="{Binding Areas}" -->
+                    <!--           SelectedItem="{Binding SelectedArea}"> -->
+                    <!--     <ComboBox.ItemTemplate> -->
+                    <!--         <DataTemplate> -->
+                    <!--             <TextBlock Text="{Binding}" /> -->
+                    <!--         </DataTemplate> -->
+                    <!--     </ComboBox.ItemTemplate> -->
+                    <!-- </ComboBox> -->
                     <TextBox Grid.Column="2" Height="30" Text="{Binding Name}" />
                     <TextBox Grid.Column="3" Height="30">
                         <TextBox.Text>
@@ -102,14 +109,21 @@
                             </Binding>
                         </TextBox.Text>
                     </TextBox>
-                    <ComboBox Grid.Column="4" Height="30" ItemsSource="{Binding Units}"
-                              SelectedItem="{Binding SelectedUnit}">
-                        <ComboBox.ItemTemplate>
+                    <controls:ElasticSearchComboBox Grid.Column="4" Height="30" ItemsSource="{Binding Units}" SelectedItem="{Binding SelectedUnit}">
+                        <controls:ElasticSearchComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}" />
                             </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                        </controls:ElasticSearchComboBox.ItemTemplate>
+                    </controls:ElasticSearchComboBox>
+                    <!-- <ComboBox Grid.Column="4" Height="30" ItemsSource="{Binding Units}" -->
+                    <!--           SelectedItem="{Binding SelectedUnit}"> -->
+                    <!--     <ComboBox.ItemTemplate> -->
+                    <!--         <DataTemplate> -->
+                    <!--             <TextBlock Text="{Binding}" /> -->
+                    <!--         </DataTemplate> -->
+                    <!--     </ComboBox.ItemTemplate> -->
+                    <!-- </ComboBox> -->
                     <TextBox Grid.Column="5" Height="30">
                         <TextBox.Text>
                             <Binding Path="ItemUnitPrice" UpdateSourceTrigger="PropertyChanged" StringFormat="{}{0:F0}">
@@ -142,7 +156,7 @@
         <!-- Work Item Preview Area  -->
         <Grid Grid.Row="1">
             <DataGrid ItemsSource="{Binding WorkItems}" SelectedItem="{Binding SelectedWorkItem }"
-                      AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
+                      AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0" HorizontalAlignment="Left">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="工程分類" Binding="{Binding Category }" />
                     <DataGridTextColumn Header="區域" Binding="{Binding Area }" />

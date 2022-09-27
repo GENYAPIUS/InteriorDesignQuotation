@@ -1,7 +1,9 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
@@ -16,6 +18,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BindingLibrary;
+using InteriorDesignQuotation.Extensions;
+using InteriorDesignQuotation.ViewModels;
 
 namespace InteriorDesignQuotation.Controls
 {
@@ -56,6 +61,70 @@ namespace InteriorDesignQuotation.Controls
                 new FrameworkPropertyMetadata(typeof(ElasticSearchComboBox)));
             SearchContentProperty =
                 DependencyProperty.Register(nameof(SearchContent), typeof(string), typeof(ElasticSearchComboBox));
+            // AddNewItemCommandProperty = DependencyProperty.Register(nameof(AddNewItemCommand), typeof(ICommand),
+            //     typeof(ElasticSearchComboBox));
+        }
+
+        private ObservableCollection<string> _viewCollection = new();
+        private ObservableCollection<string> _sourceCollection = new();
+        private ObservableCollection<string> _searchResultCollection = new();
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            DropDownClosed += (_, _) => SearchContent = string.Empty;
+            var targetCollection = GetSourceCollection();
+            if (targetCollection == null) return;
+            _viewCollection = GetSourceCollection() ?? new ObservableCollection<string>();
+            SetSearchTextBoxOnInput();
+        }
+
+        private void SetSearchTextBoxOnInput()
+        {
+            if(GetTemplateChild("SearchTextBox") is not TextBox searchTextBox) return;
+            searchTextBox.TextInput += (_, e) =>
+            {
+                OnSearchTextBoxInput();
+            };
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (GetTemplateChild("SearchTextBox") is not TextBox searchTextBox) return;
+            if (e.Key == Key.Enter && searchTextBox.IsFocused && !string.IsNullOrWhiteSpace(SearchContent))
+                OnSearchTextBoxPressEnter(e);
+            else base.OnKeyDown(e);
+        }
+
+        private void OnSearchTextBoxInput()
+        {
+            if (string.IsNullOrWhiteSpace(SearchContent))
+            {
+                _viewCollection = _sourceCollection;
+            }
+            else
+            {
+                _sourceCollection = _viewCollection.ToObservableCollection();
+                _viewCollection = _viewCollection.Where(x => x.Contains(SearchContent)).ToObservableCollection();
+            }
+        }
+
+        private void OnSearchTextBoxPressEnter(KeyEventArgs e)
+        {
+            if (_viewCollection.All(x => x != SearchContent))
+            {
+                _viewCollection.Insert(0, SearchContent);
+            }
+            SelectedItem = SearchContent;
+        }
+
+        private ObservableCollection<string>? GetSourceCollection()
+        {
+            var binding = GetBindingExpression(ItemsSourceProperty);
+            if (binding is null) return null;
+            var mainViewModel = typeof(MainViewModel);
+            var targetProperty = mainViewModel.GetProperty(binding.ResolvedSourcePropertyName);
+            return targetProperty?.GetValue(binding.ResolvedSource) as ObservableCollection<string>;
         }
 
         public static readonly DependencyProperty SearchContentProperty;
@@ -65,5 +134,22 @@ namespace InteriorDesignQuotation.Controls
             get => GetValue(SearchContentProperty) as string ?? string.Empty;
             set => SetValue(SearchContentProperty, value);
         }
+
+        // public static readonly DependencyProperty AddNewItemCommandProperty;
+        //
+        // public ICommand? AddNewItemCommand
+        // {
+        //     get => GetValue(AddNewItemCommandProperty) as ICommand;
+        //     set => SetValue(AddNewItemCommandProperty, value);
+        // }
+
+        private ICommand? _searchTextBoxDownKeyCommand;
+
+        public ICommand SearchTextBoxDownKeyCommand =>
+            _searchTextBoxDownKeyCommand ??= new RelayCommand((_) =>
+            {
+                if (GetTemplateChild("SearchTextBox") is not TextBox searchTextBox) return;
+                searchTextBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Down));
+            });
     }
 }

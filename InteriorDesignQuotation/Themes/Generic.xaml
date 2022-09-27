@@ -123,7 +123,16 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <TextBox Grid.Row="0" Margin="0" Text="{TemplateBinding SearchContent}" x:Name="SearchTextBox" />
+
+                                    <TextBox Grid.Row="0" Margin="0"
+                                             Text="{Binding Path=SearchContent, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
+                                             x:Name="SearchTextBox">
+                                        <TextBox.InputBindings>
+                                            <KeyBinding Gesture="Down"
+                                                        Command="{Binding SearchTextBoxDownKeyCommand, RelativeSource={RelativeSource TemplatedParent}}">
+                                            </KeyBinding>
+                                        </TextBox.InputBindings>
+                                    </TextBox>
                                     <Border Grid.Row="1" x:Name="dropDownBorder"
                                             Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                             BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"

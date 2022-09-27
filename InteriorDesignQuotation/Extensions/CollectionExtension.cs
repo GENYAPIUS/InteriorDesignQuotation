@@ -5,6 +5,5 @@ namespace InteriorDesignQuotation.Extensions;
 
 public static class CollectionExtension
 {
-    public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> item) =>
-        new ObservableCollection<T>(item);
+    public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> item) => new(item);
 }
