@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 using BindingLibrary;
+using InteriorDesignQuotation.Controls;
 using InteriorDesignQuotation.Extensions;
 using InteriorDesignQuotation.Services.Interfaces;
 
@@ -22,6 +24,7 @@ public class MainViewModel : NotifyPropertyBase
     private WorkItemViewModel? _selectedWorkItem;
     private string _unitSearchText = string.Empty;
     private ObservableCollection<WorkItemViewModel> _workItems = new();
+    private ICommand? _addNewContentCommand;
 
     public MainViewModel()
     {
@@ -150,6 +153,13 @@ public class MainViewModel : NotifyPropertyBase
             var source = sender;
             Debug.WriteLine(source);
             OnPropertyChanged(nameof(TotalPrice));
+        });
+
+    public ICommand AddNewContentCommand =>
+        _addNewContentCommand ??= new RelayCommand((source) =>
+        {
+            var target = source as ElasticSearchComboBox;
+            return;
         });
 
     private WorkItemViewModel GetWorkItemFromView()
