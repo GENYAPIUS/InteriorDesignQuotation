@@ -1,10 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Controls;
 using System.Windows.Input;
 using BindingLibrary;
-using InteriorDesignQuotation.Controls;
 using InteriorDesignQuotation.Extensions;
 using InteriorDesignQuotation.Services.Interfaces;
 
@@ -14,17 +12,13 @@ public class MainViewModel : NotifyPropertyBase
 {
     private readonly IWorkItemService _workItemService;
     private ICommand? _addWorkItemCommand;
-    private string _areasSearchText = string.Empty;
-    private string _categoriesSearchText = string.Empty;
     private ICommand? _cellUpdateCommand;
     private int _installmentPlanNumber;
     private decimal? _itemUnitPrice;
     private decimal? _quantity;
     private ICommand? _removeWorkItemCommand;
     private WorkItemViewModel? _selectedWorkItem;
-    private string _unitSearchText = string.Empty;
     private ObservableCollection<WorkItemViewModel> _workItems = new();
-    private ICommand? _addNewContentCommand;
 
     public MainViewModel()
     {
@@ -37,23 +31,7 @@ public class MainViewModel : NotifyPropertyBase
 
     public ObservableCollection<string> Categories { get; set; }
 
-    public string CategoriesSearchContent
-    {
-        get => _categoriesSearchText;
-        set => SetProperty(ref _categoriesSearchText, value);
-    }
-
-    public ObservableCollection<string> CategoriesSearchResult { get; set; } = new();
-
     public ObservableCollection<string> Areas { get; set; }
-
-    public string AreasSearchContent
-    {
-        get => _areasSearchText;
-        set => SetProperty(ref _areasSearchText, value);
-    }
-
-    public ObservableCollection<string> AreasSearchResult { get; set; } = new();
 
     public string Name { get; set; } = string.Empty;
 
@@ -68,14 +46,6 @@ public class MainViewModel : NotifyPropertyBase
     }
 
     public ObservableCollection<string> Units { get; set; }
-
-    public string UnitSearchContent
-    {
-        get => _unitSearchText;
-        set => SetProperty(ref _unitSearchText, value);
-    }
-
-    public ObservableCollection<string> UnitsSearchResult { get; set; } = new();
 
     public decimal? ItemUnitPrice
     {
@@ -153,13 +123,6 @@ public class MainViewModel : NotifyPropertyBase
             var source = sender;
             Debug.WriteLine(source);
             OnPropertyChanged(nameof(TotalPrice));
-        });
-
-    public ICommand AddNewContentCommand =>
-        _addNewContentCommand ??= new RelayCommand((source) =>
-        {
-            var target = source as ElasticSearchComboBox;
-            return;
         });
 
     private WorkItemViewModel GetWorkItemFromView()
