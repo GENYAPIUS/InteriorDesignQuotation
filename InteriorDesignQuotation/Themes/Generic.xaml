@@ -125,12 +125,11 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBox Grid.Row="0" Margin="0"
-                                             Text="{Binding Path=SearchContent, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
+                                             Text="{Binding SearchContent, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
                                              x:Name="SearchTextBox">
                                         <TextBox.InputBindings>
                                             <KeyBinding Gesture="Down"
-                                                        Command="{Binding SearchTextBoxDownKeyCommand, RelativeSource={RelativeSource TemplatedParent}}">
-                                            </KeyBinding>
+                                                        Command="{Binding SearchTextBoxDownKeyCommand, RelativeSource={RelativeSource TemplatedParent}}" />
                                         </TextBox.InputBindings>
                                     </TextBox>
                                     <Border Grid.Row="1" x:Name="dropDownBorder"
