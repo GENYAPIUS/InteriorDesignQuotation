@@ -1,0 +1,46 @@
+﻿<Window x:Class="InteriorDesignQuotation.MainPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:InteriorDesignQuotation"
+        mc:Ignorable="d"
+        Title="MainPage" Height="450" Width="800">
+    <Grid x:Name="PageGrid">
+        <!--Definition-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <!--Panel-->
+        <Border Grid.Row="0" Grid.Column="0" Background="LightBlue" Grid.ColumnSpan="2"/>
+        <!--<Border Grid.Row="0" Grid.Column="1" Background="Brown" />-->
+        <Border Grid.Row="1" Grid.Column="0" Background="LightYellow" />
+        <Border Grid.Row="1" Grid.Column="1" Background="LightGreen"  />
+
+        <!--Splitter-->
+        <GridSplitter Grid.Row="0" Grid.Column="0" Background="Transparent" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"  Height="5" />
+
+        <GridSplitter Grid.Row="1" Grid.Column="0" Background="Transparent"                     HorizontalAlignment="Right"   VerticalAlignment="Stretch" Width="5"  />
+
+        <!--功能列-->
+        <Button x:Name="Button_PartnerPage" Content="合作廠商管理" HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="110" Height="27" Click="Button_PartnerPage_Click" />
+        <Button x:Name="Button_Contract" Content="報價單管理" HorizontalAlignment="Center" Margin="0,42,0,0" Grid.Row="1" VerticalAlignment="Top" Width="110" Height="27" Click="Button_Contract_Click"/>
+
+        <!--Frame-->
+        <Frame x:Name="PageFrame"
+           Source="PartnerPage.xaml"
+           BorderBrush="Black"
+           BorderThickness="2"
+           NavigationUIVisibility="Visible"
+           Margin="0,0,0,0"
+               Grid.Row="1"
+               Grid.Column="1"/>
+
+    </Grid>
+</Window>
