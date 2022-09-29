@@ -17,7 +17,6 @@ public class Quotation : NotifyPropertyBase
     private decimal? _itemUnitPrice;
     private decimal? _quantity;
     private ICommand? _removeWorkItemCommand;
-    private object _selectedValue;
     private WorkItemViewModel? _selectedWorkItem;
     private ObservableCollection<WorkItemViewModel> _workItems = new();
 
