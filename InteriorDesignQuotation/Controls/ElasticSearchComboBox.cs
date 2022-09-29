@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BindingLibrary;
 using InteriorDesignQuotation.Extensions;
-using InteriorDesignQuotation.ViewModels;
 
 namespace InteriorDesignQuotation.Controls;
 
@@ -101,8 +100,8 @@ public class ElasticSearchComboBox : ComboBox
     {
         var binding = GetBindingExpression(ItemsSourceProperty);
         if (binding is null) return null;
-        var mainViewModel = typeof(MainViewModel);
-        var targetProperty = mainViewModel.GetProperty(binding.ResolvedSourcePropertyName);
+        var sourceType = binding.ResolvedSource.GetType();
+        var targetProperty = sourceType.GetProperty(binding.ResolvedSourcePropertyName);
         return targetProperty?.GetValue(binding.ResolvedSource) as ObservableCollection<string>;
     }
 }
