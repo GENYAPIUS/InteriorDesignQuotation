@@ -23,11 +23,20 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <!-- Input Area -->
         <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Height="30" Width="80" Content="讀取" HorizontalAlignment="Left" Margin="10 0 10 10" Command="{Binding Quotation.LoadQuotationCommand}"></Button>
+            <Button Grid.Column="1" Height="30" Width="80" Content="儲存" HorizontalAlignment="Left" Margin="10 0 10 10" Command="{Binding Quotation.SaveQuotationCommand}"></Button>
+        </Grid>
+        <!-- Input Area -->
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -119,7 +128,7 @@
             </Grid>
         </Grid>
         <!-- Work Item Preview Area  -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <DataGrid ItemsSource="{Binding Quotation.WorkItems}" SelectedItem="{Binding Quotation.SelectedWorkItem}"
                       AutoGenerateColumns="False" CanUserAddRows="False" RowHeaderWidth="0">
                 <DataGrid.Columns>
@@ -151,7 +160,7 @@
             </DataGrid>
         </Grid>
         <!-- Payment Information Area -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
