@@ -1,10 +1,23 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using BindingLibrary;
 using InteriorDesignQuotation.Extensions;
+using InteriorDesignQuotation.Models;
 using InteriorDesignQuotation.Services.Interfaces;
+using MessageBox = System.Windows.MessageBox;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace InteriorDesignQuotation.ViewModels;
 
@@ -17,7 +30,8 @@ public class Quotation : NotifyPropertyBase
     private decimal? _itemUnitPrice;
     private decimal? _quantity;
     private ICommand? _removeWorkItemCommand;
-    private object _selectedValue;
+    private ICommand? _loadQuotationCommand;
+    private ICommand? _saveQuotationCommand;
     private WorkItemViewModel? _selectedWorkItem;
     private ObservableCollection<WorkItemViewModel> _workItems = new();
 
@@ -127,7 +141,84 @@ public class Quotation : NotifyPropertyBase
             if (!decimal.TryParse((source.EditingElement as TextBox)?.Text, out var totalPrice)) return;
             if (SelectedWorkItem == null) return;
             SelectedWorkItem.TotalPrice = totalPrice;
+            InstallmentPlanNumber = InstallmentPlanNumber;
             OnPropertyChanged(nameof(TotalPrice));
+        });
+
+    public ICommand LoadQuotationCommand => 
+        _loadQuotationCommand ??= new RelayCommand(_ =>
+        {
+            var dialog = new FolderBrowserDialog();
+            var dialogResult = dialog.ShowDialog();
+            if (dialogResult != DialogResult.OK) return;
+            // Quotation Service
+            var selectedPath = dialog.SelectedPath;
+            if (string.IsNullOrWhiteSpace(selectedPath)) return;
+            var directoryInfo = new DirectoryInfo(selectedPath);
+            var subDirectories = directoryInfo.GetDirectories();
+            var quotationDirectory = subDirectories.FirstOrDefault(x => string.Equals(x.Name, "quotation", StringComparison.InvariantCultureIgnoreCase));
+            if (quotationDirectory == null)
+            {
+                var text = "不是符合的資料夾！";
+                var caption = "讀取錯誤";
+                MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+
+            var quotationFiles = quotationDirectory.GetFiles();
+            var quotationFileName = "quotation.json";
+            var quotationFileExtension = ".json";
+            var quotationFile = quotationFiles.FirstOrDefault(x => x.Name == quotationFileName && x.Extension == quotationFileExtension);
+            if (quotationFile == null)
+            {
+                var text = "找不到估價資料！";
+                var caption = "讀取錯誤";
+                MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+
+            using var quotationStream = quotationFile.OpenText();
+            var quotationData = JsonSerializer.Deserialize<QuotationModel>(quotationStream.ReadToEnd());
+            if (quotationData == null)
+            {
+                var text = "資料讀取出錯！";
+                var caption = "讀取錯誤";
+                MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+            WorkItems = quotationData.WorkItems.ToWorkItemViewModel();
+            InstallmentPlanNumber = quotationData.InstallmentPlanNumber;
+            OnPropertyChanged(nameof(TotalPrice));
+        });
+
+    public ICommand SaveQuotationCommand =>
+        _saveQuotationCommand ??= new RelayCommand(_ =>
+        {
+            var dialog = new FolderBrowserDialog()
+            {
+                ShowNewFolderButton = true
+            };
+
+            var dialogResult = dialog.ShowDialog();
+            if (dialogResult != DialogResult.OK) return;
+            var selectedPath = dialog.SelectedPath;
+            var selectedDirectoryInfo = new DirectoryInfo(selectedPath);
+            var subDirectoryInfo = selectedDirectoryInfo.GetDirectories();
+
+            var quotationDirectoryName = "quotation";
+            var quotationDirectoryInfo = subDirectoryInfo.FirstOrDefault(x =>
+                                             string.Equals(x.Name, quotationDirectoryName,
+                                                 StringComparison.InvariantCultureIgnoreCase)) ??
+                                         Directory.CreateDirectory($"{selectedPath}/{quotationDirectoryName}");
+            var quotationData = new QuotationModel();
+            var workItemData = WorkItems.ToWorkItemModel();
+            quotationData.WorkItems = workItemData;
+            quotationData.InstallmentPlanNumber = InstallmentPlanNumber;
+            var workItemDataJson =  JsonSerializer.Serialize(quotationData);
+            var quotationFileName = "quotation.json";
+            var quotationFilePath = $"{quotationDirectoryInfo.FullName}/{quotationFileName}";
+            using var quotationStreamWriter = File.CreateText(quotationFilePath);
+            quotationStreamWriter.Write(workItemDataJson);
         });
 
     private WorkItemViewModel GetWorkItemFromView()
