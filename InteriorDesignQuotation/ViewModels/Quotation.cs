@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Navigation;
 using BindingLibrary;
 using InteriorDesignQuotation.Extensions;
 using InteriorDesignQuotation.Models;
@@ -34,19 +29,26 @@ public class Quotation : NotifyPropertyBase
     private ICommand? _saveQuotationCommand;
     private WorkItemViewModel? _selectedWorkItem;
     private ObservableCollection<WorkItemViewModel> _workItems = new();
+    private ObservableCollection<string> _categories = new();
+    private ObservableCollection<string> _areas = new();
+    private ObservableCollection<string> _units = new();
 
     public Quotation()
     {
         _workItemService = new WorkItemService();
-        WorkItems = _workItemService.GetWorkItem();
-        Categories = WorkItems.Select(x => x.Category).Distinct().ToObservableCollection();
-        Areas = WorkItems.Select(x => x.Area).Distinct().ToObservableCollection();
-        Units = WorkItems.Select(x => x.Unit).Distinct().ToObservableCollection();
     }
 
-    public ObservableCollection<string> Categories { get; set; }
+    public ObservableCollection<string> Categories
+    {
+        get => _categories;
+        set => SetProperty(ref _categories, value);
+    }
 
-    public ObservableCollection<string> Areas { get; set; }
+    public ObservableCollection<string> Areas
+    {
+        get => _areas;
+        set => SetProperty(ref _areas, value);
+    }
 
     public string Name { get; set; } = string.Empty;
 
@@ -60,7 +62,11 @@ public class Quotation : NotifyPropertyBase
         }
     }
 
-    public ObservableCollection<string> Units { get; set; }
+    public ObservableCollection<string> Units
+    {
+        get => _units;
+        set => SetProperty(ref _units, value);
+    }
 
     public decimal? ItemUnitPrice
     {
@@ -145,7 +151,7 @@ public class Quotation : NotifyPropertyBase
             OnPropertyChanged(nameof(TotalPrice));
         });
 
-    public ICommand LoadQuotationCommand => 
+    public ICommand LoadQuotationCommand =>
         _loadQuotationCommand ??= new RelayCommand(_ =>
         {
             var dialog = new FolderBrowserDialog();
@@ -156,7 +162,8 @@ public class Quotation : NotifyPropertyBase
             if (string.IsNullOrWhiteSpace(selectedPath)) return;
             var directoryInfo = new DirectoryInfo(selectedPath);
             var subDirectories = directoryInfo.GetDirectories();
-            var quotationDirectory = subDirectories.FirstOrDefault(x => string.Equals(x.Name, "quotation", StringComparison.InvariantCultureIgnoreCase));
+            var quotationDirectory = subDirectories.FirstOrDefault(x =>
+                string.Equals(x.Name, "quotation", StringComparison.InvariantCultureIgnoreCase));
             if (quotationDirectory == null)
             {
                 var text = "不是符合的資料夾！";
@@ -168,7 +175,8 @@ public class Quotation : NotifyPropertyBase
             var quotationFiles = quotationDirectory.GetFiles();
             var quotationFileName = "quotation.json";
             var quotationFileExtension = ".json";
-            var quotationFile = quotationFiles.FirstOrDefault(x => x.Name == quotationFileName && x.Extension == quotationFileExtension);
+            var quotationFile = quotationFiles.FirstOrDefault(x =>
+                x.Name == quotationFileName && x.Extension == quotationFileExtension);
             if (quotationFile == null)
             {
                 var text = "找不到估價資料！";
@@ -186,8 +194,12 @@ public class Quotation : NotifyPropertyBase
                 MessageBox.Show(text, caption, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 return;
             }
+
             WorkItems = quotationData.WorkItems.ToWorkItemViewModel();
             InstallmentPlanNumber = quotationData.InstallmentPlanNumber;
+            Categories = WorkItems.Select(x => x.Category).Distinct().ToObservableCollection();
+            Areas = WorkItems.Select(x => x.Area).Distinct().ToObservableCollection();
+            Units = WorkItems.Select(x => x.Unit).Distinct().ToObservableCollection();
             OnPropertyChanged(nameof(TotalPrice));
         });
 
@@ -201,10 +213,10 @@ public class Quotation : NotifyPropertyBase
 
             var dialogResult = dialog.ShowDialog();
             if (dialogResult != DialogResult.OK) return;
+            // QuotationService
             var selectedPath = dialog.SelectedPath;
             var selectedDirectoryInfo = new DirectoryInfo(selectedPath);
             var subDirectoryInfo = selectedDirectoryInfo.GetDirectories();
-
             var quotationDirectoryName = "quotation";
             var quotationDirectoryInfo = subDirectoryInfo.FirstOrDefault(x =>
                                              string.Equals(x.Name, quotationDirectoryName,

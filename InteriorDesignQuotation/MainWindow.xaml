@@ -32,8 +32,10 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Height="30" Width="80" Content="讀取" HorizontalAlignment="Left" Margin="10 0 10 10" Command="{Binding Quotation.LoadQuotationCommand}"></Button>
-            <Button Grid.Column="1" Height="30" Width="80" Content="儲存" HorizontalAlignment="Left" Margin="10 0 10 10" Command="{Binding Quotation.SaveQuotationCommand}"></Button>
+            <Button Grid.Column="0" Height="30" Width="80" Content="讀取" HorizontalAlignment="Left" Margin="10 0 10 10"
+                    Command="{Binding Quotation.LoadQuotationCommand}" />
+            <Button Grid.Column="1" Height="30" Width="80" Content="儲存" HorizontalAlignment="Left" Margin="10 0 10 10"
+                    Command="{Binding Quotation.SaveQuotationCommand}" />
         </Grid>
         <!-- Input Area -->
         <Grid Grid.Row="1">
