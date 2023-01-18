@@ -44,6 +44,13 @@ public class ElasticSearchComboBox : ComboBox
         SetBindingCollection();
     }
 
+    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+        if(e.Property.Name == nameof(ItemsSource))
+            SetBindingCollection();
+    }
+
     protected override void OnKeyDown(KeyEventArgs e)
     {
         if (GetTemplateChild("SearchTextBox") is not TextBox searchTextBox) return;
